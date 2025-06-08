@@ -114,7 +114,7 @@ const Slideshow: React.FC<SlideshowProps> = ({ imageSrc, isMobileView }) => {
       <img
         src={imageSrc}
         alt="Pulsating retro colored silhouette of dude"
-        className={`${finalMainImageAndFilterShadowClasses} z-[19] ${isMobileView ? 'hidden' : ''}`}
+        className={`${finalMainImageAndFilterShadowClasses} z-[29] ${isMobileView ? 'hidden' : ''}`}
         style={{
           animationName: 'pulse-main-image-shadow',
           animationDuration: '5s',
@@ -128,7 +128,7 @@ const Slideshow: React.FC<SlideshowProps> = ({ imageSrc, isMobileView }) => {
       <img
         src={imageSrc}
         alt="Dude with sunglasses"
-        className={`${finalMainImageAndFilterShadowClasses} z-[20] ${isMobileView ? 'hidden' : ''}`}
+        className={`${finalMainImageAndFilterShadowClasses} z-[30] ${isMobileView ? 'hidden' : ''}`}
       />
     </div>
   );
