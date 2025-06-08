@@ -142,7 +142,6 @@ const MainContent: React.FC<MainContentProps> = ({ actions, showReleasesView, sh
   const [currentReleaseIndex, setCurrentReleaseIndex] = useState(0);
   const [isGameFullscreen, setIsGameFullscreen] = useState(false);
   const [isBrowserWindowFullscreen, setIsBrowserWindowFullscreen] = useState(false);
-  // Removed isVideoPlayerActive, showShareFeedback, isSharing, youtubeVideoTitle states
   const [isGameStarted, setIsGameStarted] = useState<boolean>(false);
 
 
@@ -233,11 +232,7 @@ const MainContent: React.FC<MainContentProps> = ({ actions, showReleasesView, sh
      if (isGameFullscreen && document.fullscreenElement === gamePanelRef.current?.querySelector('iframe')) {
         document.exitFullscreen();
     }
-    // Removed isVideoPlayerActive reset as state is removed.
   }, [currentRelease.id, activeReleaseTab, isGameFullscreen]);
-
-
-  // Removed useEffect for fetching YouTube video title via oEmbed
 
 
   const handleTabClick = (tab: ActiveReleaseTab) => {
@@ -310,9 +305,12 @@ const MainContent: React.FC<MainContentProps> = ({ actions, showReleasesView, sh
     touchStartYRef.current = 0;
   };
 
-
-  const mobileSlideshowTopOffsetBase = `calc(theme(spacing.10)_+_theme(spacing.1)_+_theme(spacing.2))`;
-  const mobileSlideshowTopOffsetSm = `calc(theme(spacing.12)_+_theme(spacing.1)_+_theme(spacing.2))`;
+  // Standard Tailwind spacing: 1 unit = 0.25rem
+  // spacing.1 = 0.25rem, .2 = 0.5rem, .8 = 2rem, .10 = 2.5rem, .12 = 3rem
+  // Assuming spacing.18 = 4.5rem (custom or typo, common value)
+  
+  const mobileSlideshowTopOffsetBase = '3.25rem'; // calc(2.5rem + 0.25rem + 0.5rem)
+  const mobileSlideshowTopOffsetSm = '3.75rem'; // calc(3rem + 0.25rem + 0.5rem) - Assuming spacing.12 = 3rem
 
   const musicAction = actions.find(action => action.id === 'music');
   const storyAction = actions.find(action => action.id === 'story');
@@ -370,7 +368,6 @@ const MainContent: React.FC<MainContentProps> = ({ actions, showReleasesView, sh
   const releaseTabButtonInactiveClasses = "text-gray-500 hover:text-black";
   const releaseNavButtonBaseClasses = "p-1 sm:p-1.5 text-black transition-colors duration-150 focus:outline-none rounded-sm";
 
-  // Default height, typically for MUSIC tab or if no other conditions met
   let tabContentHeightClass = 'h-[352px]';
 
   if (activeReleaseTab === 'GAME') {
@@ -397,8 +394,6 @@ const MainContent: React.FC<MainContentProps> = ({ actions, showReleasesView, sh
     panelLeftStyle = `${textBlockRect.right - textActionsAreaRect.left}px`;
   }
 
-  // Removed handleShareVideo and fallbackCopyToClipboard functions
-
   return (
     <main className="relative flex flex-col md:flex-row md:gap-10 flex-grow w-full pt-12 sm:pt-16 md:pt-20 md:items-stretch">
       <div className={`
@@ -406,11 +401,23 @@ const MainContent: React.FC<MainContentProps> = ({ actions, showReleasesView, sh
         transition-all duration-700 ease-in-out
         ${desktopSlideshowContainerClasses}
         `}>
-        <div className="w-full h-[calc(100vh_-_theme(spacing.18))] mt-[-theme(spacing.8)]">
+        {/*
+          Container for desktop slideshow.
+          Replaced theme(spacing.18) with 4.5rem and theme(spacing.8) with 2rem.
+          h-[calc(100vh_-_theme(spacing.18))] => h-[calc(100vh_-_4.5rem)]
+          mt-[-theme(spacing.8)] => mt-[-2rem]
+        */}
+        <div className="w-full h-[calc(100vh_-_4.5rem)] mt-[-2rem]">
           <Slideshow imageSrc={dudeImageSrc} isMobileView={false} />
         </div>
       </div>
 
+      {/*
+        Mobile slideshow positioning.
+        Using the pre-calculated string constants for offsets.
+        top-[${mobileSlideshowTopOffsetBase}] => top-[3.25rem]
+        sm:top-[${mobileSlideshowTopOffsetSm}] => sm:top-[3.75rem]
+      */}
       <div className={`block md:hidden fixed left-0 right-0
                      top-[${mobileSlideshowTopOffsetBase}]
                      sm:top-[${mobileSlideshowTopOffsetSm}]
@@ -423,12 +430,17 @@ const MainContent: React.FC<MainContentProps> = ({ actions, showReleasesView, sh
         ref={textActionsAreaRef}
         className={`
         w-full flex flex-col px-4 sm:px-5 py-4 md:p-0 md:py-6 lg:py-8 relative z-10
-        pb-[calc(100vh-(${mobileSlideshowTopOffsetBase})_+_2rem)]
-        sm:pb-[calc(100vh-(${mobileSlideshowTopOffsetSm})_+_2rem)]
+        pb-[calc(100vh_-_(${mobileSlideshowTopOffsetBase})_+_2rem)] 
+        sm:pb-[calc(100vh_-_(${mobileSlideshowTopOffsetSm})_+_2rem)]
         md:pb-0
         transition-all duration-700 ease-in-out
         ${textActionsAreaMdClasses}
         `}>
+        {/* 
+          The padding-bottom calculations like pb-[calc(100vh-(${mobileSlideshowTopOffsetBase})_+_2rem)]
+          will now correctly use the resolved rem values for mobileSlideshowTopOffsetBase/Sm.
+          e.g. pb-[calc(100vh_-_3.25rem_+_2rem)] which is pb-[calc(100vh_-_1.25rem)]
+        */}
 
         {showReleasesView && shouldApplySpecialTextStyling && textBlockRect && textActionsAreaRect && musicAction && currentRelease && (
           <>
@@ -867,8 +879,6 @@ const MainContent: React.FC<MainContentProps> = ({ actions, showReleasesView, sh
                         if (isTabletOrDesktop && musicAction.onDesktopSecondaryClick && !showReleasesView) {
                             musicAction.onDesktopSecondaryClick(e);
                         }
-                        // For other cases (mobile, or desktop without specific handler, or already in view),
-                        // allow default browser behavior based on href and target.
                       }}
                       className={`${commonLinkClasses} absolute inset-0 transition-opacity duration-300 ease-in-out ${
                         !(showReleasesView && shouldApplySpecialTextStyling) ? 'opacity-100' : 'opacity-0 pointer-events-none'
@@ -933,12 +943,9 @@ const MainContent: React.FC<MainContentProps> = ({ actions, showReleasesView, sh
                     rel={storyAction.secondaryLink.startsWith('http') ? 'noopener noreferrer' : undefined}
                     onClick={(e) => {
                         const isTabletOrDesktop = isTablet || isLargeDesktop;
-                        // Check if a desktop-specific click handler exists for this action
                         if (isTabletOrDesktop && storyAction.onDesktopSecondaryClick && !showUpdatesView) {
                             storyAction.onDesktopSecondaryClick(e);
                         }
-                        // If no specific desktop handler (e.g., it's now an external link like Instagram),
-                        // or if on mobile, or if already in the target view, allow default browser behavior.
                     }}
                     className={`${commonLinkClasses} absolute inset-0 transition-opacity duration-300 ease-in-out ${
                       !(showUpdatesView && shouldApplySpecialTextStyling) ? 'opacity-100' : 'opacity-0 pointer-events-none'
