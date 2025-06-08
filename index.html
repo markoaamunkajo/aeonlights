@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Aeonlights Landing Page</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+<script type="importmap">
+{
+  "imports": {
+    "react-dom/": "https://esm.sh/react-dom@^19.1.0/",
+    "react/": "https://esm.sh/react@^19.1.0/",
+    "react": "https://esm.sh/react@^19.1.0"
+  }
+}
+</script>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+<style>
+    /* Main image is at approx -20% translateX */
+    @keyframes pulse-shadow-1 { /* Cyan, z-[13] */
+        0%, 100% { transform: translateX(-25%); }
+        50% { transform: translateX(-28%); }
+    }
+    @keyframes pulse-shadow-2 { /* Magenta, z-[12] */
+        0%, 100% { transform: translateX(-30%); }
+        50% { transform: translateX(-33%); }
+    }
+    @keyframes pulse-shadow-3 { /* Lime Green, z-[11] */
+        0%, 100% { transform: translateX(-35%); }
+        50% { transform: translateX(-38%); }
+    }
+    @keyframes pulse-shadow-4 { /* Electric Blue, z-[10] */
+        0%, 100% { transform: translateX(-40%); }
+        50% { transform: translateX(-43%); }
+    }
+
+    @keyframes pulse-main-image-shadow {
+        0%, 100% {
+            filter: drop-shadow(-8px 4px 12px rgba(0, 255, 255, 0.125)); /* Cyan, 12.5% opacity */
+        }
+        25% {
+            filter: drop-shadow(-10px 5px 20px rgba(255, 0, 255, 0.125)); /* Magenta, 12.5% opacity */
+        }
+        50% {
+            filter: drop-shadow(-12px 6px 25px rgba(255, 255, 0, 0.125)); /* Yellow, 12.5% opacity */
+        }
+        75% {
+            filter: drop-shadow(-10px 5px 20px rgba(50, 205, 50, 0.125)); /* Lime Green, 12.5% opacity */
+        }
+    }
+
+    /* Keyframes for container shadows */
+    @keyframes animate-container-shadow-1 { /* Top shadow layer */
+        0%, 100% { transform: translate(0px, 0px) rotate(0deg) scale(1.00); }
+        25% { transform: translate(-4px, 2px) rotate(-2.5deg) scale(1.02); }
+        50% { transform: translate(3px, -3px) rotate(1.5deg) scale(0.99); }
+        75% { transform: translate(-2px, 4px) rotate(3deg) scale(1.03); }
+    }
+    @keyframes animate-container-shadow-2 { /* Middle shadow layer */
+        0%, 100% { transform: translate(0px, 0px) rotate(0deg) scale(1.00); }
+        25% { transform: translate(3px, -4px) rotate(3deg) scale(1.01); }
+        50% { transform: translate(-2px, 2px) rotate(-2deg) scale(1.00); }
+        75% { transform: translate(4px, 3px) rotate(-3.5deg) scale(1.02); }
+    }
+    @keyframes animate-container-shadow-3 { /* Bottom shadow layer */
+        0%, 100% { transform: translate(0px, 0px) rotate(0deg) scale(1.00); }
+        25% { transform: translate(-6px, 6px) rotate(3.5deg) scale(1.01); }
+        50% { transform: translate(6px, -6px) rotate(-3deg) scale(0.98); }
+        75% { transform: translate(4px, 4px) rotate(4deg) scale(1.00); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fadeIn {
+      animation: fadeIn 0.3s ease-out forwards;
+    }
+</style>
+<link rel="stylesheet" href="/index.css">
+</head>
+<body class="antialiased">
+    <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
+</body>
+</html>
