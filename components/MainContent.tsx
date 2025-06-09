@@ -29,7 +29,7 @@ const initialReleasesData: ReleaseDetail[] = [
     id: 'future-cities',
     title: 'Future Cities',
     spotifyEmbedUrl: 'https://open.spotify.com/embed/album/0sNOF9WDwhWunNAHPD3Baj?utm_source=generator&theme=0',
-    youtubeEmbedUrl: 'https://www.youtube.com/embed/rokGy0huYEA', // Example valid video
+    youtubeEmbedUrl: 'https://youtu.be/ze5ou_JHHPU?si=Bmn18c9BQdFIFM63', // Updated YouTube URL
     hasGame: true,
     gameEmbedUrl: 'https://futurecities.vercel.app/',
     gameThumbnailUrl: 'https://aamunkajo.com/wireframe_city.png',
@@ -385,19 +385,7 @@ const MainContent: React.FC<MainContentProps> = ({ actions, showReleasesView, sh
   const mobileReleaseNavButtonBaseClasses = "p-1.5 text-black transition-colors duration-150 focus:outline-none rounded-sm";
 
 
-  let desktopTabContentHeightClass = 'h-[352px]'; // For desktop/tablet panel
-  if (activeReleaseTab === 'GAME') {
-    if (isTablet || isLargeDesktop) {
-      if (isBrowserWindowFullscreen && !isGameFullscreen) {
-        desktopTabContentHeightClass = 'h-[85vh]'; 
-      } else {
-        desktopTabContentHeightClass = 'h-[60vh]';
-      }
-    }
-  } else if (activeReleaseTab === 'VIDEO') {
-    desktopTabContentHeightClass = 'h-[352px]';
-  }
-
+  // Removed desktopTabContentHeightClass as it's no longer used for dynamic height adjustment
 
   let panelLeftStyle = '0px';
   if (textBlockRect && textActionsAreaRect && showReleasesView && (isTablet || isLargeDesktop)) {
@@ -628,7 +616,7 @@ const MainContent: React.FC<MainContentProps> = ({ actions, showReleasesView, sh
                     <div className="border-b-2 border-black w-full mb-4" aria-hidden="true"></div>
 
                     <div
-                      className={`flex-grow ${desktopTabContentHeightClass} overflow-hidden`}
+                      className={`flex-grow overflow-hidden`} // Removed fixed height class
                     >
                       {activeReleaseTab === 'MUSIC' && (
                         <div key={`music-panel-desktop-${currentRelease.id}`} role="tabpanel" id="panel-music-desktop" aria-labelledby="tab-music-desktop" className="animate-fadeIn h-full">
@@ -642,7 +630,21 @@ const MainContent: React.FC<MainContentProps> = ({ actions, showReleasesView, sh
                                 const hasSpotifyLink = currentRelease.spotifyEmbedUrl && currentRelease.spotifyEmbedUrl.trim() !== '';
 
                                 if (isFutureRelease || !hasSpotifyLink) {
-                                  return (
+                                  if (currentRelease.id === 'future-cities') {
+                                    return (
+                                      <div 
+                                        className="w-full h-full rounded-lg shadow-md bg-slate-50 flex items-center justify-center"
+                                        aria-label={`${currentRelease.title} cover art`}
+                                      >
+                                        <img
+                                          src="https://aamunkajo.com/future-cities-cover.jpeg"
+                                          alt={`${currentRelease.title} cover art`}
+                                          className="w-full h-full object-contain rounded-lg"
+                                        />
+                                      </div>
+                                    );
+                                  }
+                                  return ( // Generic placeholder
                                     <div
                                       className="w-full h-full flex items-center justify-center border-2 border-dashed border-gray-400 rounded-lg bg-slate-50"
                                       aria-label={`Spotify player placeholder for ${currentRelease.title}. ${isFutureRelease ? 'Release date is in the future.' : 'Spotify link not available.'}`}
@@ -653,7 +655,7 @@ const MainContent: React.FC<MainContentProps> = ({ actions, showReleasesView, sh
                                     </div>
                                   );
                                 }
-                                return (
+                                return ( // Spotify player
                                   <iframe
                                     className="rounded-lg shadow-md w-full h-full"
                                     src={currentRelease.spotifyEmbedUrl}
@@ -672,17 +674,13 @@ const MainContent: React.FC<MainContentProps> = ({ actions, showReleasesView, sh
                         </div>
                       )}
                       {activeReleaseTab === 'VIDEO' && currentRelease.youtubeEmbedUrl && (() => {
-                          const releaseDate = new Date(currentRelease.details.releaseDate);
-                          const today = new Date();
-                          today.setHours(0, 0, 0, 0);
-                          const isFutureRelease = releaseDate > today;
                           const videoId = getYouTubeVideoId(currentRelease.youtubeEmbedUrl);
 
-                          if (isFutureRelease || !videoId) {
+                          if (!videoId) { // MODIFIED: Removed isFutureRelease check for video
                               return (
                                   <div
                                       className="relative w-full h-full overflow-hidden rounded-lg shadow-md bg-slate-50 border-2 border-dashed border-gray-400 flex items-center justify-center animate-fadeIn"
-                                      aria-label={`YouTube video placeholder for ${currentRelease.title}. ${isFutureRelease ? 'Release date is in the future.' : 'Video not available.'}`}
+                                      aria-label={`YouTube video placeholder for ${currentRelease.title}. Video not available.`}
                                       role="tabpanel" id="panel-video-desktop" aria-labelledby="tab-video-desktop"
                                   >
                                       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-16 h-16 sm:w-20 sm:h-20 text-gray-300">
@@ -832,6 +830,7 @@ const MainContent: React.FC<MainContentProps> = ({ actions, showReleasesView, sh
           )}
 
           {/* Default View Main Text Blocks (Music & Story actions) */}
+          {/* This div is always rendered unless (showReleasesView && isMobile), so textBlockWrapperRef is stable */}
           <div className={`
             transition-transform duration-700 ease-in-out
             ${activeViewLayoutClasses} 
@@ -1091,7 +1090,21 @@ const MainContent: React.FC<MainContentProps> = ({ actions, showReleasesView, sh
                     const hasSpotifyLink = currentRelease.spotifyEmbedUrl && currentRelease.spotifyEmbedUrl.trim() !== '';
 
                     if (isFutureRelease || !hasSpotifyLink) {
-                      return (
+                       if (currentRelease.id === 'future-cities') {
+                        return (
+                          <div 
+                            className="w-full h-full rounded-lg shadow-md bg-slate-100 flex items-center justify-center"
+                            aria-label={`${currentRelease.title} cover art`}
+                          >
+                            <img
+                              src="https://aamunkajo.com/future-cities-cover.jpeg"
+                              alt={`${currentRelease.title} cover art`}
+                              className="w-full h-full object-contain rounded-lg"
+                            />
+                          </div>
+                        );
+                      }
+                      return ( // Generic placeholder
                         <div className="w-full h-full flex items-center justify-center border-2 border-dashed border-gray-400 rounded-lg bg-slate-100"
                              aria-label={`Spotify player placeholder for ${currentRelease.title}. ${isFutureRelease ? 'Release date is in the future.' : 'Spotify link not available.'}`}>
                           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-16 h-16 text-gray-300">
@@ -1100,7 +1113,7 @@ const MainContent: React.FC<MainContentProps> = ({ actions, showReleasesView, sh
                         </div>
                       );
                     }
-                    return (
+                    return ( // Spotify player
                       <iframe
                         className="rounded-lg shadow-md w-full h-full"
                         src={currentRelease.spotifyEmbedUrl}
@@ -1118,15 +1131,11 @@ const MainContent: React.FC<MainContentProps> = ({ actions, showReleasesView, sh
             {activeReleaseTab === 'VIDEO' && currentRelease.youtubeEmbedUrl && (
               <div key={`mobile-video-${currentRelease.id}`} id="panel-video-mobile" role="tabpanel" aria-labelledby="tab-video-mobile" className="animate-fadeIn aspect-video w-full bg-black rounded-lg shadow-md overflow-hidden">
                 {(() => {
-                  const releaseDate = new Date(currentRelease.details.releaseDate);
-                  const today = new Date();
-                  today.setHours(0,0,0,0);
-                  const isFutureRelease = releaseDate > today;
                   const videoId = getYouTubeVideoId(currentRelease.youtubeEmbedUrl);
-                  if (isFutureRelease || !videoId) {
+                  if (!videoId) { // MODIFIED: Removed isFutureRelease check for video
                     return (
                       <div className="w-full h-full flex items-center justify-center border-2 border-dashed border-gray-400 rounded-lg bg-slate-100"
-                           aria-label={`YouTube video placeholder for ${currentRelease.title}. ${isFutureRelease ? 'Release date is in the future.' : 'Video not available.'}`}>
+                           aria-label={`YouTube video placeholder for ${currentRelease.title}. Video not available.`}>
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-16 h-16 text-gray-300">
                           <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                         </svg>
