@@ -191,11 +191,12 @@ const MainContent: React.FC<MainContentProps> = ({ actions, showReleasesView, sh
 
     measureElements();
 
+    // Re-measure on resize or when relevant states change
     window.addEventListener('resize', measureElements);
     return () => {
       window.removeEventListener('resize', measureElements);
     };
-  }, [showReleasesView, isTablet, isLargeDesktop]);
+  }, [showReleasesView, isTablet, isLargeDesktop]); // Effect dependencies ensure re-measurement
 
 
   useEffect(() => {
@@ -357,9 +358,9 @@ const MainContent: React.FC<MainContentProps> = ({ actions, showReleasesView, sh
     desktopSlideshowContainerClasses = 'md:w-0 md:opacity-0 md:scale-90 md:overflow-hidden pointer-events-none';
   }
 
-  let textActionsAreaMdClasses = 'md:w-[15.07%] md:justify-start md:items-end text-center md:text-right md:pr-6';
+  let textActionsAreaMdClasses = 'md:w-[15.07%] md:justify-start md:items-end text-center md:text-right md:pr-6 md:py-6 lg:py-8';
   if (isSpecialViewActive && shouldApplySpecialTextStylingForDesktopTablet) {
-    textActionsAreaMdClasses = 'md:w-full md:items-start md:text-left md:pl-0 md:pr-7';
+    textActionsAreaMdClasses = 'md:w-full md:items-start md:text-left md:pl-0 md:pr-7 md:py-6 lg:py-8';
   }
 
   const isDesktopOrTablet = isTablet || isLargeDesktop;
@@ -476,8 +477,8 @@ const MainContent: React.FC<MainContentProps> = ({ actions, showReleasesView, sh
 
       {/* Mobile Parallax Slideshow: Hidden if mobile releases view is active */}
       <div className={`block md:hidden fixed left-0 right-0
-                     top-[${mobileSlideshowTopOffsetBase}]
-                     sm:top-[${mobileSlideshowTopOffsetSm}]
+                     top-[3.25rem]
+                     sm:top-[3.75rem]
                      bottom-0
                      z-0
                      ${(showReleasesView && isMobile) ? 'hidden' : ''} 
@@ -491,10 +492,10 @@ const MainContent: React.FC<MainContentProps> = ({ actions, showReleasesView, sh
         <div
           ref={textActionsAreaRef}
           className={`
-          w-full flex flex-col px-4 sm:px-5 py-4 md:p-0 md:py-6 lg:py-8 relative z-10
-          pb-[calc(100vh_-_(${mobileSlideshowTopOffsetBase})_+_2rem)] 
-          sm:pb-[calc(100vh_-_(${mobileSlideshowTopOffsetSm})_+_2rem)]
-          md:pb-0
+          w-full flex flex-col px-4 sm:px-5 py-4 relative z-10
+          pb-[calc(100vh_-_1.25rem)] 
+          sm:pb-[calc(100vh_-_1.75rem)] 
+          md:p-0 md:pb-0 
           transition-all duration-700 ease-in-out
           ${textActionsAreaMdClasses}
           `}
@@ -831,108 +832,35 @@ const MainContent: React.FC<MainContentProps> = ({ actions, showReleasesView, sh
           )}
 
           {/* Default View Main Text Blocks (Music & Story actions) */}
-          {/* This part is shown if not in any special view OR if in special view on mobile (but then parent is hidden) */}
-          {((!isSpecialViewActive && !isMobile) || (!isSpecialViewActive && isMobile) || (isSpecialViewActive && !shouldApplySpecialTextStylingForDesktopTablet && !isMobile )) && (
-            <div className={`
-              transition-transform duration-700 ease-in-out
-              ${activeViewLayoutClasses} 
-            `}>
-              {musicAction && (
-                <div className={`
-                  relative mb-8 sm:mb-10 md:mb-12 lg:mb-16
-                  transition-all duration-500 ease-in-out
-                  ${(showUpdatesView && shouldApplySpecialTextStylingForDesktopTablet)
-                    ? 'opacity-0 scale-95 translate-y-4 pointer-events-none'
-                    : 'opacity-100 scale-100 translate-y-0'
-                  }
-                  ${(showReleasesView && shouldApplySpecialTextStylingForDesktopTablet) ? 'z-[6]' : ''}
-                  `}>
-                  <div ref={textBlockWrapperRef} className="relative z-[1]">
-                    <h2
-                      className={`
-                        ${(showReleasesView && shouldApplySpecialTextStylingForDesktopTablet) ? reducedTitleSizeClasses : originalTitleSizeClasses}
-                        font-extrabold uppercase leading-none tracking-tighter text-transparent bg-clip-text
-                        ${getGradientClasses(musicAction.primaryColor)}
-                        ${(showReleasesView && shouldApplySpecialTextStylingForDesktopTablet) ? activeViewTextBackgroundClasses : ''}
-                      `}
-                    >
-                      {musicAction.primaryTextLines.map((line, index) => (
-                        <span key={index} className="block">{line}</span>
-                      ))}
-                    </h2>
-                    {musicAction.secondaryText && (
-                      <div className={`${linkContainerClasses}`}>
-                        <a
-                          href="#"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            onBackClick();
-                          }}
-                          className={`${commonLinkClasses} absolute inset-0 transition-opacity duration-300 ease-in-out ${
-                            (showReleasesView && shouldApplySpecialTextStylingForDesktopTablet) ? 'opacity-100' : 'opacity-0 pointer-events-none'
-                          }`}
-                          aria-hidden={!(showReleasesView && shouldApplySpecialTextStylingForDesktopTablet)}
-                          tabIndex={(showReleasesView && shouldApplySpecialTextStylingForDesktopTablet) ? 0 : -1}
-                          role="link"
-                          aria-label="Back to main view"
-                        >
-                          &larr; BACK
-                        </a>
-                        <a
-                          href={musicAction.secondaryLink || '#'}
-                          target={musicAction.secondaryLink?.startsWith('http') ? '_blank' : undefined}
-                          rel={musicAction.secondaryLink?.startsWith('http') ? 'noopener noreferrer' : undefined}
-                          onClick={(e) => {
-                            const isTabletOrDesktopView = isTablet || isLargeDesktop;
-                            if (isTabletOrDesktopView && musicAction.onDesktopSecondaryClick && !showReleasesView) {
-                                musicAction.onDesktopSecondaryClick(e);
-                            } else if (isMobile && musicAction.onDesktopSecondaryClick && !showReleasesView) { // For mobile, secondary click always activates view
-                                musicAction.onDesktopSecondaryClick(e);
-                            } else if (!isTabletOrDesktopView && !musicAction.onDesktopSecondaryClick && musicAction.secondaryLink) { // Mobile fallback if no onDesktopSecondaryClick
-                                window.location.href = musicAction.secondaryLink;
-                            }
-                          }}
-                          className={`${commonLinkClasses} absolute inset-0 transition-opacity duration-300 ease-in-out ${
-                            !(showReleasesView && shouldApplySpecialTextStylingForDesktopTablet) ? 'opacity-100' : 'opacity-0 pointer-events-none'
-                          }`}
-                          aria-hidden={showReleasesView && shouldApplySpecialTextStylingForDesktopTablet}
-                          tabIndex={!(showReleasesView && shouldApplySpecialTextStylingForDesktopTablet) ? 0 : -1}
-                          role="link"
-                          aria-label={musicAction.secondaryText}
-                        >
-                          {musicAction.secondaryText}
-                        </a>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
-
-              {storyAction && (
-                <div className={`
-                  relative mb-8 sm:mb-10 md:mb-12 lg:mb-16
-                  transition-all duration-500 ease-in-out
-                  ${(showReleasesView && shouldApplySpecialTextStylingForDesktopTablet)
-                    ? 'opacity-0 scale-95 translate-y-4 pointer-events-none'
-                    : 'opacity-100 scale-100 translate-y-0'
-                  }
-                  ${(showUpdatesView && shouldApplySpecialTextStylingForDesktopTablet) ? 'z-[6]' : ''}
-                  `}>
+          <div className={`
+            transition-transform duration-700 ease-in-out
+            ${activeViewLayoutClasses} 
+          `}>
+            {musicAction && (
+              <div className={`
+                relative mb-8 sm:mb-10 md:mb-12 lg:mb-16
+                transition-all duration-500 ease-in-out
+                ${(showUpdatesView && shouldApplySpecialTextStylingForDesktopTablet)
+                  ? 'opacity-0 scale-95 translate-y-4 pointer-events-none'
+                  : 'opacity-100 scale-100 translate-y-0'
+                }
+                ${(showReleasesView && shouldApplySpecialTextStylingForDesktopTablet) ? 'z-[6]' : ''}
+                `}>
+                <div ref={textBlockWrapperRef} className="relative z-[1]">
                   <h2
-                      className={`
-                        relative z-[1]
-                        ${(showUpdatesView && shouldApplySpecialTextStylingForDesktopTablet) ? reducedTitleSizeClasses : originalTitleSizeClasses}
-                        font-extrabold uppercase leading-none tracking-tighter text-transparent bg-clip-text
-                        ${getGradientClasses(storyAction.primaryColor)}
-                        ${(showUpdatesView && shouldApplySpecialTextStylingForDesktopTablet) ? activeViewTextBackgroundClasses : ''}
-                      `}
+                    className={`
+                      ${(showReleasesView && shouldApplySpecialTextStylingForDesktopTablet) ? reducedTitleSizeClasses : originalTitleSizeClasses}
+                      font-extrabold uppercase leading-none tracking-tighter text-transparent bg-clip-text
+                      ${getGradientClasses(musicAction.primaryColor)}
+                      ${(showReleasesView && shouldApplySpecialTextStylingForDesktopTablet) ? activeViewTextBackgroundClasses : ''}
+                    `}
                   >
-                    {storyAction.primaryTextLines.map((line, index) => (
+                    {musicAction.primaryTextLines.map((line, index) => (
                       <span key={index} className="block">{line}</span>
                     ))}
                   </h2>
-                  {storyAction.secondaryText && storyAction.secondaryLink && (
-                    <div className={`${linkContainerClasses} relative z-[1]`}>
+                  {musicAction.secondaryText && (
+                    <div className={`${linkContainerClasses}`}>
                       <a
                         href="#"
                         onClick={(e) => {
@@ -940,45 +868,115 @@ const MainContent: React.FC<MainContentProps> = ({ actions, showReleasesView, sh
                           onBackClick();
                         }}
                         className={`${commonLinkClasses} absolute inset-0 transition-opacity duration-300 ease-in-out ${
-                          (showUpdatesView && shouldApplySpecialTextStylingForDesktopTablet) ? 'opacity-100' : 'opacity-0 pointer-events-none'
+                          (showReleasesView && shouldApplySpecialTextStylingForDesktopTablet) ? 'opacity-100' : 'opacity-0 pointer-events-none'
                         }`}
-                        aria-hidden={!(showUpdatesView && shouldApplySpecialTextStylingForDesktopTablet)}
-                        tabIndex={(showUpdatesView && shouldApplySpecialTextStylingForDesktopTablet) ? 0 : -1}
+                        aria-hidden={!(showReleasesView && shouldApplySpecialTextStylingForDesktopTablet)}
+                        tabIndex={(showReleasesView && shouldApplySpecialTextStylingForDesktopTablet) ? 0 : -1}
                         role="link"
                         aria-label="Back to main view"
                       >
                         &larr; BACK
                       </a>
                       <a
-                        href={storyAction.secondaryLink}
-                        target={storyAction.secondaryLink.startsWith('http') ? '_blank' : undefined}
-                        rel={storyAction.secondaryLink.startsWith('http') ? 'noopener noreferrer' : undefined}
+                        href={musicAction.secondaryLink || '#'}
+                        target={musicAction.secondaryLink?.startsWith('http') ? '_blank' : undefined}
+                        rel={musicAction.secondaryLink?.startsWith('http') ? 'noopener noreferrer' : undefined}
                         onClick={(e) => {
-                            const isTabletOrDesktopView = isTablet || isLargeDesktop;
-                            if (isTabletOrDesktopView && storyAction.onDesktopSecondaryClick && !showUpdatesView) {
-                                storyAction.onDesktopSecondaryClick(e);
-                            } else if (isMobile && storyAction.onDesktopSecondaryClick && !showUpdatesView) {
-                                storyAction.onDesktopSecondaryClick(e);
-                            } else if (!isTabletOrDesktopView && !storyAction.onDesktopSecondaryClick && storyAction.secondaryLink) {
-                                window.location.href = storyAction.secondaryLink;
-                            }
+                          const isTabletOrDesktopView = isTablet || isLargeDesktop;
+                          if (isTabletOrDesktopView && musicAction.onDesktopSecondaryClick && !showReleasesView) {
+                              musicAction.onDesktopSecondaryClick(e);
+                          } else if (isMobile && musicAction.onDesktopSecondaryClick && !showReleasesView) { // For mobile, secondary click always activates view
+                              musicAction.onDesktopSecondaryClick(e);
+                          } else if (!isTabletOrDesktopView && !musicAction.onDesktopSecondaryClick && musicAction.secondaryLink) { // Mobile fallback if no onDesktopSecondaryClick
+                              window.location.href = musicAction.secondaryLink;
+                          }
                         }}
                         className={`${commonLinkClasses} absolute inset-0 transition-opacity duration-300 ease-in-out ${
-                          !(showUpdatesView && shouldApplySpecialTextStylingForDesktopTablet) ? 'opacity-100' : 'opacity-0 pointer-events-none'
+                          !(showReleasesView && shouldApplySpecialTextStylingForDesktopTablet) ? 'opacity-100' : 'opacity-0 pointer-events-none'
                         }`}
-                        aria-hidden={showUpdatesView && shouldApplySpecialTextStylingForDesktopTablet}
-                        tabIndex={!(showUpdatesView && shouldApplySpecialTextStylingForDesktopTablet) ? 0 : -1}
+                        aria-hidden={showReleasesView && shouldApplySpecialTextStylingForDesktopTablet}
+                        tabIndex={!(showReleasesView && shouldApplySpecialTextStylingForDesktopTablet) ? 0 : -1}
                         role="link"
-                        aria-label={storyAction.secondaryText}
+                        aria-label={musicAction.secondaryText}
                       >
-                        {storyAction.secondaryText}
+                        {musicAction.secondaryText}
                       </a>
                     </div>
                   )}
                 </div>
-              )}
-            </div>
-          )}
+              </div>
+            )}
+
+            {storyAction && (
+              <div className={`
+                relative mb-8 sm:mb-10 md:mb-12 lg:mb-16
+                transition-all duration-500 ease-in-out
+                ${(showReleasesView && shouldApplySpecialTextStylingForDesktopTablet)
+                  ? 'opacity-0 scale-95 translate-y-4 pointer-events-none'
+                  : 'opacity-100 scale-100 translate-y-0'
+                }
+                ${(showUpdatesView && shouldApplySpecialTextStylingForDesktopTablet) ? 'z-[6]' : ''}
+                `}>
+                <h2
+                    className={`
+                      relative z-[1]
+                      ${(showUpdatesView && shouldApplySpecialTextStylingForDesktopTablet) ? reducedTitleSizeClasses : originalTitleSizeClasses}
+                      font-extrabold uppercase leading-none tracking-tighter text-transparent bg-clip-text
+                      ${getGradientClasses(storyAction.primaryColor)}
+                      ${(showUpdatesView && shouldApplySpecialTextStylingForDesktopTablet) ? activeViewTextBackgroundClasses : ''}
+                    `}
+                >
+                  {storyAction.primaryTextLines.map((line, index) => (
+                    <span key={index} className="block">{line}</span>
+                  ))}
+                </h2>
+                {storyAction.secondaryText && storyAction.secondaryLink && (
+                  <div className={`${linkContainerClasses} relative z-[1]`}>
+                    <a
+                      href="#"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        onBackClick();
+                      }}
+                      className={`${commonLinkClasses} absolute inset-0 transition-opacity duration-300 ease-in-out ${
+                        (showUpdatesView && shouldApplySpecialTextStylingForDesktopTablet) ? 'opacity-100' : 'opacity-0 pointer-events-none'
+                      }`}
+                      aria-hidden={!(showUpdatesView && shouldApplySpecialTextStylingForDesktopTablet)}
+                      tabIndex={(showUpdatesView && shouldApplySpecialTextStylingForDesktopTablet) ? 0 : -1}
+                      role="link"
+                      aria-label="Back to main view"
+                    >
+                      &larr; BACK
+                    </a>
+                    <a
+                      href={storyAction.secondaryLink}
+                      target={storyAction.secondaryLink.startsWith('http') ? '_blank' : undefined}
+                      rel={storyAction.secondaryLink.startsWith('http') ? 'noopener noreferrer' : undefined}
+                      onClick={(e) => {
+                          const isTabletOrDesktopView = isTablet || isLargeDesktop;
+                          if (isTabletOrDesktopView && storyAction.onDesktopSecondaryClick && !showUpdatesView) {
+                              storyAction.onDesktopSecondaryClick(e);
+                          } else if (isMobile && storyAction.onDesktopSecondaryClick && !showUpdatesView) {
+                              storyAction.onDesktopSecondaryClick(e);
+                          } else if (!isTabletOrDesktopView && !storyAction.onDesktopSecondaryClick && storyAction.secondaryLink) {
+                              window.location.href = storyAction.secondaryLink;
+                          }
+                      }}
+                      className={`${commonLinkClasses} absolute inset-0 transition-opacity duration-300 ease-in-out ${
+                        !(showUpdatesView && shouldApplySpecialTextStylingForDesktopTablet) ? 'opacity-100' : 'opacity-0 pointer-events-none'
+                      }`}
+                      aria-hidden={showUpdatesView && shouldApplySpecialTextStylingForDesktopTablet}
+                      tabIndex={!(showUpdatesView && shouldApplySpecialTextStylingForDesktopTablet) ? 0 : -1}
+                      role="link"
+                      aria-label={storyAction.secondaryText}
+                    >
+                      {storyAction.secondaryText}
+                    </a>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
         </div>
       )}
       
