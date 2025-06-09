@@ -35,15 +35,28 @@ const App: React.FC = () => {
   }, [showReleasesView, showUpdatesView]); // Effect dependency
 
   useEffect(() => {
-    const originalOverflow = document.body.style.overflow;
+    const rootElement = document.getElementById('root');
+    const originalBodyOverflow = document.body.style.overflow;
+    const originalRootOverflow = rootElement ? rootElement.style.overflow : '';
+    
     if (showReleasesView || showUpdatesView) {
       document.body.style.overflow = 'hidden';
+      if (rootElement) {
+        rootElement.style.overflow = 'hidden';
+      }
     } else {
-      document.body.style.overflow = originalOverflow || ''; // Restore to original or default
+      document.body.style.overflow = originalBodyOverflow || '';
+      if (rootElement) {
+        rootElement.style.overflow = originalRootOverflow || '';
+      }
     }
+    
     // Cleanup function
     return () => {
-      document.body.style.overflow = originalOverflow || ''; // Restore to original value on unmount or before effect runs again
+      document.body.style.overflow = originalBodyOverflow || '';
+      if (rootElement) {
+        rootElement.style.overflow = originalRootOverflow || '';
+      }
     };
   }, [showReleasesView, showUpdatesView]);
 
@@ -138,3 +151,4 @@ const App: React.FC = () => {
 };
 
 export default App;
+      

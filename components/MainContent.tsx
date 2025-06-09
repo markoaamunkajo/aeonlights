@@ -312,10 +312,10 @@ const MainContent: React.FC<MainContentProps> = ({ actions, showReleasesView, sh
 
     if (Math.abs(deltaX) > swipeThreshold && 
         Math.abs(deltaY) < Math.abs(deltaX) * verticalToHorizontalRatioThreshold) {
-      if (deltaX < 0) {
-        handleNextRelease();
-      } else {
-        handlePrevRelease();
+      if (deltaX < 0) { // Swipe Left
+        handlePrevRelease(); // Reversed: Was handleNextRelease
+      } else { // Swipe Right
+        handleNextRelease(); // Reversed: Was handlePrevRelease
       }
     }
 
