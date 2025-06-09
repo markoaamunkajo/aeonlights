@@ -690,7 +690,7 @@ const MainContent: React.FC<MainContentProps> = ({ actions, showReleasesView, sh
                               );
                           }
                           
-                          let embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&fs=0&rel=0`;
+                          let embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=0&fs=0&rel=0`; // autoplay=0
 
                           return (
                                <div 
@@ -1142,7 +1142,7 @@ const MainContent: React.FC<MainContentProps> = ({ actions, showReleasesView, sh
                       </div>
                     );
                   }
-                  const embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&fs=0&rel=0`;
+                  const embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=0&fs=0&rel=0`; // autoplay=0
                   return (
                     <iframe
                       className="w-full h-full border-0"
