@@ -34,6 +34,19 @@ const App: React.FC = () => {
     };
   }, [showReleasesView, showUpdatesView]); // Effect dependency
 
+  useEffect(() => {
+    const originalOverflow = document.body.style.overflow;
+    if (showReleasesView || showUpdatesView) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = originalOverflow || ''; // Restore to original or default
+    }
+    // Cleanup function
+    return () => {
+      document.body.style.overflow = originalOverflow || ''; // Restore to original value on unmount or before effect runs again
+    };
+  }, [showReleasesView, showUpdatesView]);
+
   const socialLinks: SocialLink[] = [
     { name: 'Spotify', href: 'https://open.spotify.com/artist/6ETqKRnxshk8huuB8ubj64?si=Jk_ZJkTZQD66KoQdTfK1fA', icon: <SpotifyIcon className="w-[clamp(0.75rem,0.5rem+1vw,1rem)] h-[clamp(0.75rem,0.5rem+1vw,1rem)]" /> },
     { name: 'Facebook', href: 'https://facebook.com/aeonlightsmusic', icon: <FacebookIcon className="w-[clamp(0.75rem,0.5rem+1vw,1rem)] h-[clamp(0.75rem,0.5rem+1vw,1rem)]" /> },
