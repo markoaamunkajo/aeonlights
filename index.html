@@ -78,11 +78,54 @@
     .animate-fadeIn {
       animation: fadeIn 0.3s ease-out forwards;
     }
+
+    #rotate-device-overlay {
+        position: fixed;
+        inset: 0;
+        background-color: rgba(25, 25, 35, 0.98); /* Dark, slightly desaturated blue */
+        color: #E0E0E0; /* Light gray text */
+        display: none; /* Initially hidden */
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        font-family: 'Press Start 2P', cursive;
+        font-size: clamp(1rem, 1.5vw + 0.5rem, 1.5rem); /* Responsive font size */
+        padding: 2rem;
+        z-index: 10000; /* Ensure it's on top of everything */
+        line-height: 1.6;
+        letter-spacing: 0.05em;
+    }
+
+    #rotate-device-overlay::before {
+        content: '↪'; /* Rotate icon, or use an SVG */
+        font-size: clamp(2.5rem, 4vw + 1rem, 4rem);
+        color: #FACC15; /* Tailwind yellow-400 */
+        margin-bottom: 1.5rem;
+        display: inline-block;
+        transform: rotate(90deg); /* Pointing to landscape */
+    }
+
+    /* Media query for tablet portrait mode */
+    @media (min-width: 768px) and (max-width: 1023px) and (orientation: portrait) {
+        #root {
+            display: none !important; /* Hide the app content */
+        }
+        #rotate-device-overlay {
+            display: flex !important; /* Show the overlay */
+        }
+        body {
+            overflow: hidden; /* Prevent scrolling of the body when overlay is visible */
+        }
+    }
 </style>
 <link rel="stylesheet" href="/index.css">
 </head>
 <body class="antialiased">
     <div id="root"></div>
+    <div id="rotate-device-overlay">
+        For the best experience, please rotate your device to landscape mode.
+    </div>
     <script type="module" src="/index.tsx"></script>
 </body>
 </html>

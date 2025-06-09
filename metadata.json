@@ -1,6 +1,6 @@
 {
-  "name": "Aeonlights Website",
-  "description": "A responsive React and Tailwind CSS single-page application replicating the Aeonlights landing page design. Features a bold, modern aesthetic with a split-screen layout for showcasing content. This is a standalone React application.",
+  "name": "Aeonlights",
+  "description": "Aeonlights official website",
   "requestFramePermissions": [],
   "prompt": ""
 }
